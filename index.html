@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM SCAN</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        #log {
+            width: 100%;
+            max-width: 500px;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .red { color: red; font-weight: bold; }
+        .yellow { color: yellow; }
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+<div id="log"></div>
+
+<script>
+    const logContainer = document.getElementById('log');
+
+    function addLine(text, className = '') {
+        const p = document.createElement('p');
+        p.innerHTML = text;
+        if (className) p.className = className;
+        logContainer.appendChild(p);
+        // Прокрутка вниз
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    // Имитация загрузки
+    addLine("[*] Connecting to tracking server...");
+    
+    setTimeout(() => {
+        addLine("[*] Bypassing proxy... OK");
+        addLine("[*] Getting public IP address...");
+        
+        // Запрос к бесплатному API для получения IP
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(data => {
+                addLine(`<span class="red">[!] IP DETECTED: ${data.ip}</span>`);
+                addLine(`[!] LOCATION: ${data.city}, ${data.country_name}`);
+                addLine(`[!] ISP: ${data.org}`);
+                addLine(`[!] TIMEZONE: ${data.timezone}`);
+                
+                setTimeout(() => {
+                    addLine("<br>========== SCAN COMPLETE ==========", "yellow");
+                    addLine("<span class='red blink'>WARNING: YOUR DEVICE IS COMPROMISED.</span>");
+                }, 1000);
+            })
+            .catch(error => {
+                addLine("[x] Error: Could not fetch IP. Check connection.", "red");
+            });
+    }, 1500);
+</script>
+
+</body>
+</html>
